@@ -1,0 +1,29 @@
+import streamlit as st
+from transformers import pipeline
+
+# Load a pre-trained fake news classifier from Hugging Face
+classifier = pipeline("text-classification",  model="nlptown/bert-base-multilingual-uncased-sentiment")
+
+st.title("📰 Fake News Detector (Pre-Trained Model)")
+st.write("Enter a news article below to check if it's real or fake.")
+
+# User input
+news_text = st.text_area("Paste the news article here:", "")
+
+if st.button("Check News"):
+    if news_text.strip() == "":
+        st.warning("Please enter a news article.")
+    else:
+        # Get prediction
+        prediction = classifier(news_text)[0]
+        label = prediction['label']
+        score = prediction['score']
+
+        # Display result
+        if label == "FAKE":
+            st.error(f"🚨 This news is *Fake*! (Confidence: {score:.2f})")
+        else:
+            st.success(f"✅ This news is *Real*! (Confidence: {score:.2f})")
+
+st.sidebar.header("About")
+st.sidebar.write("This Fake News Detector uses a pre-trained BERT model from Hugging Face.")
